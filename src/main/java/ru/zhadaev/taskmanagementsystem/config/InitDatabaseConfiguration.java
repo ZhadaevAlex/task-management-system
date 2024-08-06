@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 
 @Component
 @RequiredArgsConstructor
-public class InitDatabaseConfig {
+public class InitDatabaseConfiguration {
     private final ApplicationContext context;
 
     @Value("${test.data.filename.schema}")

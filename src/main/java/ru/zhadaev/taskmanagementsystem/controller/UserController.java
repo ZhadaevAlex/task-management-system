@@ -8,7 +8,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.zhadaev.taskmanagementsystem.dto.CreateUpdateUserDto;
 import ru.zhadaev.taskmanagementsystem.dto.UserDto;
-import ru.zhadaev.taskmanagementsystem.service.TaskService;
 import ru.zhadaev.taskmanagementsystem.service.UserService;
 import ru.zhadaev.taskmanagementsystem.validation.Marker;
 
@@ -20,7 +19,6 @@ import java.util.UUID;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
-    private final TaskService taskService;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)

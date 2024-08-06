@@ -1,7 +1,7 @@
 package ru.zhadaev.taskmanagementsystem.dto;
 
 import lombok.Data;
-
+import ru.zhadaev.taskmanagementsystem.dao.entity.Status;
 import java.util.List;
 import java.util.UUID;
 

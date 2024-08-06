@@ -46,12 +46,12 @@ public class TaskController {
     }
 
     @PatchMapping("/status/{id}")
-    public TaskDto changeStatusById(@RequestBody @Valid ChangeStatusTaskDto changeStatusTaskDto, UUID id) {
+    public TaskDto changeStatusById(@RequestBody @Valid ChangeStatusTaskDto changeStatusTaskDto, @PathVariable("id") UUID id) {
         return taskService.changeStatusById(changeStatusTaskDto, id);
     }
 
     @PatchMapping("/performer/{id}")
-    public TaskDto assignPerformerById(@RequestBody @Valid AssignTaskPerformerDto assignTaskPerformerDto, UUID id) {
+    public TaskDto assignPerformerById(@RequestBody @Valid AssignTaskPerformerDto assignTaskPerformerDto, @PathVariable("id") UUID id) {
         return taskService.assignPerformerById(assignTaskPerformerDto, id);
     }
 

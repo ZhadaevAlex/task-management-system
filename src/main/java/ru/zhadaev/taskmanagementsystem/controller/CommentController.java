@@ -29,7 +29,6 @@ public class CommentController {
 
     @GetMapping("/{id}")
     public CommentDto findById(@PathVariable("id") UUID id) {
-        CommentDto byId = commentService.findById(id);
         return commentService.findById(id);
     }
 

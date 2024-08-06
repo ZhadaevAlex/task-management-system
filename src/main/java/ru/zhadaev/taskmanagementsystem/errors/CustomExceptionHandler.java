@@ -1,5 +1,6 @@
 package ru.zhadaev.taskmanagementsystem.errors;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,6 +39,17 @@ public class CustomExceptionHandler {
     @ExceptionHandler(AccessPermissionException.class)
     public ResponseEntity<CustomError> onAccessPermissionException(AccessPermissionException ex) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
+        return ResponseEntity
+                .status(status)
+                .body(new CustomError(
+                        new Timestamp(System.currentTimeMillis()),
+                        status.getReasonPhrase(),
+                        ex.getMessage()));
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<CustomError> onJwtException(JwtException ex) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
         return ResponseEntity
                 .status(status)
                 .body(new CustomError(
