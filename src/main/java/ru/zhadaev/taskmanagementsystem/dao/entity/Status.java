@@ -1,7 +1,7 @@
 package ru.zhadaev.taskmanagementsystem.dao.entity;
 
 public enum Status {
-    OPEN,
+    OPENED,
     IN_PROGRESS,
     COMPLETED,
 }

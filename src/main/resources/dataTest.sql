@@ -2,7 +2,7 @@ insert into task_management.task_management.users (id, email, password) VALUES (
 insert into task_management.task_management.users (id, email, password) VALUES ('82dc22a0-d332-4241-959a-b20f8590155f', 'email2', '$2a$12$dVEX3B/WbIIiW0v.ce2tCutwdGxTUOt.6FAeovGVndzgMnXGDwu3K'); --pass2
 insert into task_management.task_management.users (id, email, password) VALUES ('5405c989-9dbf-4e35-a923-8b1d4e4ad7bc', 'email3', '$2a$12$zBG7r3Ov3xjrKb7AtUnmNeE2r8vMmq/9.5yiCqp8Go0ip/54JjFuG'); --pass3
 
-insert into task_management.task_management.task (id, header, description, status, priority, author_id, performer_id) VALUES ('3412cd10-9ec0-41f4-802f-e6440792fed2', 'header1', 'description1', 'IN_WAITING', 'HIGH', 'fedd6a4f-f0e8-4a50-82e7-8b69bffc6507', '82dc22a0-d332-4241-959a-b20f8590155f');
+insert into task_management.task_management.task (id, header, description, status, priority, author_id, performer_id) VALUES ('3412cd10-9ec0-41f4-802f-e6440792fed2', 'header1', 'description1', 'OPENED', 'HIGH', 'fedd6a4f-f0e8-4a50-82e7-8b69bffc6507', '82dc22a0-d332-4241-959a-b20f8590155f');
 insert into task_management.task_management.task (id, header, description, status, priority, author_id, performer_id) VALUES ('28ce2670-453a-46d5-b9a0-786fd4a52eab', 'header2', 'description2', 'IN_PROGRESS', 'MEDIUM', '82dc22a0-d332-4241-959a-b20f8590155f', '82dc22a0-d332-4241-959a-b20f8590155f');
 insert into task_management.task_management.task (id, header, description, status, priority, author_id, performer_id) VALUES ('380f1c97-d71f-4a04-b025-0ba103b4f6b0', 'header3', 'description3', 'COMPLETED', 'LOW', '5405c989-9dbf-4e35-a923-8b1d4e4ad7bc', '82dc22a0-d332-4241-959a-b20f8590155f');
 

@@ -1,5 +1,11 @@
 package ru.zhadaev.taskmanagementsystem.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,13 +23,16 @@ import java.util.UUID;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/users")
+@Tag(name = "User controller", description = "This resource represents an all users in the system")
 public class UserController {
     private final UserService userService;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Validated(Marker.OnPost.class)
-    public UserDto save(@RequestBody @Valid CreateUpdateUserDto createUpdateUserDto) {
+    @Operation(summary = "Add a new user", description = "This method adds a new user")
+    public UserDto save(
+            @RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New user") CreateUpdateUserDto createUpdateUserDto) {
         return userService.save(createUpdateUserDto);
     }
 
@@ -33,6 +42,7 @@ public class UserController {
     }
 
     @GetMapping()
+    @SecurityRequirement(name = "JWT")
     public List<UserDto> findAll(Pageable pageable) {
         return userService.findAll(pageable);
     }
