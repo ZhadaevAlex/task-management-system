@@ -8,15 +8,12 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Management System",
+                title = "Task Management System",
                 description = "Test task from the Effective Mobile company", version = "1.0.0",
                 contact = @Contact(
                         name = "Zhadaev Alexander",
                         email = "zhadaevs@yandex.ru",
-                        url = "https://github.com/ZhadaevAlex"
-                )
-        )
-)
+                        url = "https://github.com/ZhadaevAlex")))
 @SecurityScheme(
         name = "JWT",
         type = SecuritySchemeType.HTTP,

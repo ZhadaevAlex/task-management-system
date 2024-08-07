@@ -33,28 +33,32 @@ public class CommentService {
 
     public CommentDto addToTask(CreateUpdateCommentDto createUpdateCommentDto, UUID taskId) {
         String authUserEmail = userService.getAuthUserEmail();
-        User aurtUser = userMapper.toEntity(userService.findByEmail(authUserEmail));
+        User authUser = userMapper.toEntity(userService.findByEmail(authUserEmail));
         Task task = taskMapper.toEntity(taskService.findById(taskId));
         Comment comment = commentMapper.toEntity(createUpdateCommentDto);
-        comment.setAuthor(aurtUser);
+        comment.setAuthor(authUser);
         comment.setTime(LocalDateTime.now());
-        task.getComments().add(comment); //todo проверить автоматическое сохранение таски
+        task.getComments().add(comment);
         comment.setTask(task);
         return commentMapper.toDto(commentRepository.save(comment));
     }
 
-    public CommentDto findById(UUID id) {
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(String.format("Comment not found by id = %s", id)));
-        return commentMapper.toDto(comment);
-    }
-
-    public List<CommentDto> findAll(Pageable pageable) {
-        List<Comment> comments = commentRepository.findAll(pageable).toList();
+    public List<CommentDto> findAllByAuthorByTaskId(Pageable pageable, UUID taskId) {
+        String authUserEmail = userService.getAuthUserEmail();
+        List<Comment> comments = commentRepository.findAllByAuthorByTaskId(pageable, authUserEmail, taskId);
         return commentMapper.toDtos(comments);
     }
 
-    public CommentDto updateByAuthor(CreateUpdateCommentDto createUpdateCommentDto, UUID id) {
+    public List<CommentDto> findAllByTaskId(Pageable pageable, UUID taskId) {
+        List<Comment> comments = commentRepository.findAllByTaskId(pageable, taskId);
+        return commentMapper.toDtos(comments);
+    }
+
+    public CommentDto updateByIdByAuthor(CreateUpdateCommentDto createUpdateCommentDto, UUID id) {
+        if (!existsById(id)) {
+            throw new NotFoundException(String.format("Comment update error. Comment not found by id = %s", id));
+        }
+
         if (isAuthor(id)) {
             Comment comment = commentMapper.toEntity(findById(id));
             commentMapper.update(createUpdateCommentDto, comment);
@@ -76,13 +80,14 @@ public class CommentService {
         }
     }
 
-    public void deleteAllByAuthor() {
-        String authUserEmail = userService.getAuthUserEmail();
-        commentRepository.deleteAllByAuthor(authUserEmail);
-    }
-
     private boolean existsById(UUID id) {
         return commentRepository.existsById(id);
+    }
+
+    private CommentDto findById(UUID id) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(String.format("Comment not found by id = %s", id)));
+        return commentMapper.toDto(comment);
     }
 
     public boolean isAuthor(UUID id) {

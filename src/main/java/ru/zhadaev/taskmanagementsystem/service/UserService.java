@@ -6,8 +6,6 @@ import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +17,6 @@ import ru.zhadaev.taskmanagementsystem.exception.AlreadyExistsException;
 import ru.zhadaev.taskmanagementsystem.exception.NotFoundException;
 import ru.zhadaev.taskmanagementsystem.mapper.UserMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,6 +73,14 @@ public class UserService {
         }
     }
 
+    public void deleteByEmail(String email) {
+        if (existsByEmail(email)) {
+            userRepository.deleteByEmail(email);
+        } else {
+            throw new NotFoundException(String.format("User delete error. User not found by email = %s", email));
+        }
+    }
+
     public void deleteAll() {
         userRepository.deleteAll();
     }
@@ -85,7 +90,7 @@ public class UserService {
     }
 
     private boolean existsByEmail(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        return userRepository.existsByEmail(email);
     }
 
     public UserDetails getCurrentUserDetails() {
@@ -100,9 +105,5 @@ public class UserService {
     public String getAuthUserEmail() {
         UserDetails userDetails = getCurrentUserDetails();
         return userDetails.getUsername();
-    }
-
-    public User getAuthUser() {
-        return userRepository.findByEmail(getAuthUserEmail()).orElseThrow(() -> new NotFoundException(String.format("User not found by email = %s", getAuthUserEmail())));
     }
 }
