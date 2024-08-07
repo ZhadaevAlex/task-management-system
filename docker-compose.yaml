@@ -3,11 +3,11 @@ version: '3'
 services:
   db:
     image: postgres
-    container_name: task-management-system_db
+    container_name: task-management_db
     environment:
       POSTGRES_USER: zhadaev
       POSTGRES_PASSWORD: 123
-      POSTGRES_DB:  school
+      POSTGRES_DB:  task-management
     ports:
       - 5432:5432
     restart: always
@@ -18,10 +18,10 @@ services:
       retries: 3
 
   backend:
-    image: task-management-system
-    container_name: task-management-system
+    image: task-management
+    container_name: task-management
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://school_db:5432/task-management-system
+      SPRING_DATASOURCE_URL: jdbc:postgresql://task-management_db:5432/task-management
     ports:
       - 8080:8080
     depends_on:
