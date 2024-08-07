@@ -1,29 +1,23 @@
-version: '3ю'
+version: '3.8'
 
 services:
   db:
     image: postgres
-    container_name: task-management_db
     environment:
       POSTGRES_USER: zhadaev
       POSTGRES_PASSWORD: 123
-      POSTGRES_DB:  task-management
+      POSTGRES_DB: task-management
     ports:
-      - 5432:5432
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U zhadaev -d postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 3
+      - "5432:5432"
 
-  backend:
-    image: task-management
+  app:
+    build: .
     container_name: task-management
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://task-management_db:5432/task-management
     ports:
-      - 8080:8080
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/task-management
+      SPRING_DATASOURCE_USERNAME: zhadaev
+      SPRING_DATASOURCE_PASSWORD: 123
     depends_on:
-      db:
-        condition: service_healthy
+      - db
