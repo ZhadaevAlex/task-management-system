@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    container_name: task-management-system_db
+    environment:
+      POSTGRES_USER: zhadaev
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB:  school
+    ports:
+      - 5432:5432
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zhadaev -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  backend:
+    image: task-management-system
+    container_name: task-management-system
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://school_db:5432/task-management-system
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_healthy
