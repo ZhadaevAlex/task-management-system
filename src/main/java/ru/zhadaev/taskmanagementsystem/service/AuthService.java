@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.zhadaev.taskmanagementsystem.controller.AuthController;
 import ru.zhadaev.taskmanagementsystem.dto.JwtRequest;
 import ru.zhadaev.taskmanagementsystem.exception.InvalidJwtAuthenticationException;
 import ru.zhadaev.taskmanagementsystem.security.CustomUserDetailService;
