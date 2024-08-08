@@ -48,7 +48,7 @@ class UserServiceTest {
             "Password1#"
     );
 
-    public static final UserDto userDto = new UserDto(
+    public static final UserDto USER_DTO = new UserDto(
             ID,
             "example1@mail.ru",
             "Password1#"
@@ -100,11 +100,11 @@ class UserServiceTest {
         @Test
         void findById_shouldReturnValidUserDto_whenUserUserIsExistsById() {
             Mockito.doReturn(Optional.of(USER)).when(userRepository).findById(ID);
-            Mockito.doReturn(userDto).when(userMapper).toDto(USER);
+            Mockito.doReturn(USER_DTO).when(userMapper).toDto(USER);
             UserDto actual = userService.findById(ID);
             verify(userRepository, times(1)).findById(ID);
             verify(userMapper, times(1)).toDto(USER);
-            assertEquals(actual, userDto);
+            assertEquals(actual, USER_DTO);
         }
 
         @Test
@@ -118,11 +118,11 @@ class UserServiceTest {
         void findByEmail_shouldReturnValidUserDto_whenUserIsExistByEmail() {
             String email = "example1@mail.ru";
             Mockito.doReturn(Optional.of(USER)).when(userRepository).findByEmail(email);
-            Mockito.doReturn(userDto).when(userMapper).toDto(USER);
+            Mockito.doReturn(USER_DTO).when(userMapper).toDto(USER);
             UserDto actual = userService.findByEmail(email);
             verify(userRepository, times(1)).findByEmail(email);
             verify(userMapper, times(1)).toDto(USER);
-            assertEquals(actual, userDto);
+            assertEquals(actual, USER_DTO);
         }
 
 

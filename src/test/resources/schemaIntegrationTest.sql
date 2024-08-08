@@ -26,13 +26,13 @@ create table if not exists task_management.task
     foreign key(performer_id) references task_management.users (id) on delete set null
 );
 
-create table if not exists task_management.task_management.comment
+create table if not exists task_management.comment
 (
     id uuid primary key,
     time timestamp null,
     author_id uuid null,
     content varchar(4096),
     task_id uuid null,
-    foreign key (author_id) references task_management.task_management.users (id) on delete set null,
-    foreign key (task_id) references task_management.task_management.task (id) on delete set null
+    foreign key (author_id) references task_management.users (id) on delete set null,
+    foreign key (task_id) references task_management.task (id) on delete set null
 )
