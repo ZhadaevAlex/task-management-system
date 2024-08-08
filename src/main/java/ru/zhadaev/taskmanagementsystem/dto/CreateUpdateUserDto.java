@@ -2,11 +2,15 @@ package ru.zhadaev.taskmanagementsystem.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.zhadaev.taskmanagementsystem.validation.Marker;
 
 @Data
 @Schema(description = "The user being added or updated")
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateUpdateUserDto {
     @NotNull(groups = Marker.OnPost.class,
             message = "The email address must be not null")
