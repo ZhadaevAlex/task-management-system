@@ -33,7 +33,7 @@ public class UserService {
             throw new AlreadyExistsException(String.format("A user with the login '%s' already exists", createUpdateUserDto.getEmail()));
         }
         User user = userMapper.toEntity(createUpdateUserDto);
-//        user.setPassword(passwordEncoder.encode(createUpdateUserDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(createUpdateUserDto.getPassword()));
         User saved = userRepository.save(user);
         return userMapper.toDto(saved);
     }
@@ -59,7 +59,7 @@ public class UserService {
         User user = userMapper.toEntity(this.findById(id));
         userMapper.update(userDto, user);
         if (userDto.getPassword() != null) {
-//            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
         user = userRepository.save(user);
         return userMapper.toDto(user);
