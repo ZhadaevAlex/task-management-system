@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import ru.zhadaev.taskmanagementsystem.validation.Marker;
 
 @Data
-@Schema(description = "The user being added or updated")
+@Schema(description = "Created/updated user")
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateUpdateUserDto {

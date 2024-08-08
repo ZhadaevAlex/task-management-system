@@ -42,10 +42,10 @@ public class UserController {
         return userService.findById(id);
     }
 
-    @GetMapping("/email")
+    @GetMapping("/{email}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Find a user by email", description = "This endpoint retrieves a user from the database using their unique email")
-    public UserDto findByEmail(@Parameter(description = "User email") String email) {
+    public UserDto findByEmail(@PathVariable("email") @Parameter(description = "User email") String email) {
         return userService.findByEmail(email);
     }
 
@@ -71,10 +71,10 @@ public class UserController {
         userService.deleteById(id);
     }
 
-    @DeleteMapping("/email")
+    @DeleteMapping("/{email}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Delete a user by email", description = "This endpoint deletes a user from the database using their unique email")
-    public void deleteByEmail(@Parameter(description = "email") String email) {
+    public void deleteByEmail(@PathVariable("email") @Parameter(description = "email") String email) {
         userService.deleteByEmail(email);
     }
 

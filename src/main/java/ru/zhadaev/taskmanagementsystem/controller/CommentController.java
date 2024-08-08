@@ -1,6 +1,7 @@
 package ru.zhadaev.taskmanagementsystem.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,10 +34,10 @@ public class CommentController {
         return commentService.addToTask(createUpdateCommentDto, taskId);
     }
 
-    @GetMapping("/author")
+    @GetMapping("/author/{id}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Retrieve all comments of a specific author of the task with the specified ID", description = "This endpoint retrieves a comments from the database of a specific author of the task with the specified ID")
-    public List<CommentDto> findAllByAuthorByTaskId(Pageable pageable, UUID taskId) {
+    public List<CommentDto> findAllByAuthorByTaskId(@PathVariable("id") @Parameter(description = "Task ID") Pageable pageable, UUID taskId) {
         return commentService.findAllByAuthorByTaskId(pageable, taskId);
     }
 
@@ -51,14 +52,14 @@ public class CommentController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Updating the comment by ID if the user is the author", description = "This endpoint updates the details of an existing comment in the database with the specified ID, but only if the requesting user is the author of the comment")
-    public CommentDto updateByIdByAuthor(@RequestBody @Valid CreateUpdateCommentDto createUpdateCommentDto, @PathVariable("id") UUID id) {
+    public CommentDto updateByIdByAuthor(@RequestBody @Valid CreateUpdateCommentDto createUpdateCommentDto, @PathVariable("id") @Parameter(description = "Comment ID") UUID id) {
         return commentService.updateByIdByAuthor(createUpdateCommentDto, id);
     }
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Delete the comment by ID if the user is the author", description = "This endpoint deletes a comment in the database with the specified ID, but only if the requesting user is the author of the comment")
-    public void deleteByIdByAuthor(@PathVariable("id") UUID id) {
+    public void deleteByIdByAuthor(@PathVariable("id") @Parameter(description = "Comment ID") UUID id) {
         commentService.deleteByIdByAuthor(id);
     }
 }
