@@ -2,12 +2,16 @@ package ru.zhadaev.taskmanagementsystem.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.zhadaev.taskmanagementsystem.dao.entity.Status;
 import ru.zhadaev.taskmanagementsystem.validation.Marker;
 
 @Schema(description = "Created/updated task")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateUpdateTaskDto {
     @NotNull(groups = Marker.OnPost.class,
             message = "The header must be not null")

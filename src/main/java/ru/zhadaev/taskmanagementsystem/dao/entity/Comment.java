@@ -1,7 +1,9 @@
 package ru.zhadaev.taskmanagementsystem.dao.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
@@ -10,6 +12,8 @@ import java.util.UUID;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(schema = "task_management", name = "comment")
 public class Comment {
     @Id

@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -23,7 +22,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import ru.zhadaev.taskmanagementsystem.TaskManagementSystemApplication;
-import ru.zhadaev.taskmanagementsystem.dao.entity.User;
 import ru.zhadaev.taskmanagementsystem.dto.UserDto;
 import ru.zhadaev.taskmanagementsystem.security.JwtTokenUtils;
 
@@ -53,8 +51,6 @@ public class UserIT {
 
     private final MockMvc mockMvc;
 
-    private UserDetailsService userDetailsService;
-
     @Autowired
     private JwtTokenUtils jwtTokenUtils;
 
@@ -70,24 +66,12 @@ public class UserIT {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         jwtToken = jwtTokenUtils.generateToken(userDetails);
 
-        String id1 = "fedd6a4f-f0e8-4a50-82e7-8b69bffc6507";
-        String id2 = "82dc22a0-d332-4241-959a-b20f8590155f";
         String id3 = "5405c989-9dbf-4e35-a923-8b1d4e4ad7bc";
         String id4 = "fe388668-d648-49f5-9764-5c6c8190806a";
-        String id5 = "8deadac2-b96a-4c21-bafc-bde14f018716";
-        String id6 = "3a551150-aa77-4b64-a38b-ba42519fbfd3";
-        String email1 = "example1@mail.ru";
-        String email2 = "example2@mail.ru";
         String email3 = "example3@mail.ru";
         String email4 = "example4@mail.ru";
-        String email5 = "example5@mail.ru";
-        String email6 = "example6@mail.ru";
-        String password1 = "$2a$12$XCoPKbTUfLzWYda0yCsSHuy9M9gVJATttpyvuInpkXmso9g2SME1W";
-        String password2 = "$2a$12$URB3m7C1..eOQRmSPOhDVu6aXKx4VqD1ZTtjRTr8nIjW88uYJnP7S";
         String password3 = "$2a$12$S6/o8jkidnqFvwx16KXHVOyAVrXwDiusCGsBECYhFUrTCsJAPsRFu";
         String password4 = "$2a$12$2LXjXVV3zBwrr5HBlp.KzOPLE77wwM4wtGA6rEdge3I.tsmcfR4XO";
-        String password5 = "$2a$12$/l7H.G8I8vO4DzuTYrkzzuCX.dM/khqUc.xnFGe6yhgKO5t0s2n7m";
-        String password6 = "$2a$12$QE8RVMAGfL5rA0GkicrMHOejsmduokWnmpz9ckxGV0DA1u7BUOWMC";
         List<UserDto> expected = List.of(
                 new UserDto(UUID.fromString(id3), email3, password3),
                 new UserDto(UUID.fromString(id4), email4, password4));
@@ -150,7 +134,7 @@ public class UserIT {
     }
 
     @Nested
-    @DisplayName("Tests for creation an student")
+    @DisplayName("Tests for creation an user")
     class CreateTest {
 
         @Test
