@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Schema(description = "Updated comment")
 @Data
-public class CreateUpdateCommentDto {
+public class UpdateCommentDto {
     @NotNull(message = "The comment's content must be not null")
     @Size(max = 4096, message = "The maximum number of characters is 4096")
     private String content;

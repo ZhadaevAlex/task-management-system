@@ -42,7 +42,7 @@ public class UserController {
         return userService.findById(id);
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/email/{email}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Find a user by email", description = "This endpoint retrieves a user from the database using their unique email")
     public UserDto findByEmail(@PathVariable("email") @Parameter(description = "User email") String email) {

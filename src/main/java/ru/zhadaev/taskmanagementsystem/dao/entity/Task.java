@@ -1,7 +1,9 @@
 package ru.zhadaev.taskmanagementsystem.dao.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(schema = "task_management", name = "task")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(generator = "UUID")
