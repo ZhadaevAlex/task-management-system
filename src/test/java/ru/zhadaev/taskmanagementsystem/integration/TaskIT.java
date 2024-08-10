@@ -226,34 +226,34 @@ public class TaskIT {
         assertEquals(expected, actual);
     }
 
-//    @Test
-//    @WithUserDetails("example1@mail.ru")
-//    void save_shouldReturnError_whenSomeDataIsNotValid() throws Exception {
-//        String expectedMsg = "The header must be not null";
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        jwtToken = jwtTokenUtils.generateToken(userDetails);
-//
-//        String header1 = null;
-//        String description1 = "description4";
-//        Status status1 = Status.OPENED;
-//        Priority priority1 = Priority.HIGH;
-//        String performerId1 = "fedd6a4f-f0e8-4a50-82e7-8b69bffc6507";
-//        String performerEmail = "example1@mail.ru";
-//        String performerPassword = "$2a$12$XCoPKbTUfLzWYda0yCsSHuy9M9gVJATttpyvuInpkXmso9g2SME1W";
-//        UserDto performer = new UserDto(UUID.fromString(performerId1), performerEmail, performerPassword);
-//
-//        CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header1, description1, status1, priority1, performer);
-//        TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer, null);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String content = objectMapper.writeValueAsString(saved);
-//
-//        mockMvc.perform(post("/api/tasks")
-//                        .contentType("application/json")
-//                        .content(content))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$..message").value(expectedMsg))
-//                .andReturn();
-//    }
+    @Test
+    @WithUserDetails("example1@mail.ru")
+    void save_shouldReturnError_whenSomeDataIsNotValid() throws Exception {
+        String expectedMsg = "The header must contain at least one non-whitespace character";
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+        String header1 = null;
+        String description1 = "description4";
+        Status status1 = Status.OPENED;
+        Priority priority1 = Priority.HIGH;
+        String performerId1 = "fedd6a4f-f0e8-4a50-82e7-8b69bffc6507";
+        String performerEmail = "example1@mail.ru";
+        String performerPassword = "$2a$12$XCoPKbTUfLzWYda0yCsSHuy9M9gVJATttpyvuInpkXmso9g2SME1W";
+        UserDto performer = new UserDto(UUID.fromString(performerId1), performerEmail, performerPassword);
+
+        CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header1, description1, status1.toString(), priority1.toString(), performerEmail);
+        TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer, null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String content = objectMapper.writeValueAsString(saved);
+
+        mockMvc.perform(post("/api/tasks")
+                        .contentType("application/json")
+                        .content(content))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$..message").value(expectedMsg))
+                .andReturn();
+    }
 }
