@@ -167,5 +167,31 @@ public class UserIT {
             saved.setPassword(actual.getPassword());
             assertEquals(saved, actual);
         }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void save_shouldReturnError_whenEmailIsNotValid() throws Exception {
+            String expectedMsg = "The email address must be in the format user@example.com";
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String email = "example7";
+            String password = "Password7#";
+            UserDto saved = new UserDto();
+            saved.setEmail(email);
+            saved.setPassword(password);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(saved);
+
+            mockMvc.perform(post("/api/users")
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$..message").value(expectedMsg))
+                    .andReturn();
+        }
     }
 }
