@@ -14,7 +14,7 @@ import ru.zhadaev.taskmanagementsystem.security.JwtTokenUtils;
 
 @Service
 @AllArgsConstructor
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailService customUserDetailService;

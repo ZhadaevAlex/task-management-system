@@ -208,7 +208,7 @@ public class TaskIT {
         String performerPassword = "$2a$12$XCoPKbTUfLzWYda0yCsSHuy9M9gVJATttpyvuInpkXmso9g2SME1W";
         UserDto performer = new UserDto(UUID.fromString(performerId1), performerEmail, performerPassword);
 
-        CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header1, description1, status1, priority1, performer);
+        CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header1, description1, status1.toString(), priority1.toString(), performerEmail);
         TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer, null);
         ObjectMapper objectMapper = new ObjectMapper();
         String content = objectMapper.writeValueAsString(saved);

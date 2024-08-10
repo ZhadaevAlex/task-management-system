@@ -3,6 +3,7 @@ package ru.zhadaev.taskmanagementsystem.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.zhadaev.taskmanagementsystem.dao.entity.Task;
 import ru.zhadaev.taskmanagementsystem.dao.entity.User;
 import ru.zhadaev.taskmanagementsystem.dao.repository.TaskRepository;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
@@ -28,9 +30,11 @@ public class TaskService {
 
     public TaskDto save(CreateUpdateTaskDto createUpdateTaskDto) {
         String authUserEmail = userService.getAuthUserEmail();
-        User aurtUser = userMapper.toEntity(userService.findByEmail(authUserEmail));
+        User userAuthor = userMapper.toEntity(userService.findByEmail(authUserEmail));
+        User userPerformer = userMapper.toEntity(userService.findByEmail(createUpdateTaskDto.getPerformerEmail()));
         Task task = taskMapper.toEntity(createUpdateTaskDto);
-        task.setAuthor(aurtUser);
+        task.setAuthor(userAuthor);
+        task.setPerformer(userPerformer);
         return taskMapper.toTaskResponseDto(taskRepository.save(task));
     }
 
@@ -48,6 +52,11 @@ public class TaskService {
     public TaskDto updateByAuthor(CreateUpdateTaskDto createUpdateTaskDto, UUID id) {
         if (isAuthor(id)) {
             Task task = taskMapper.toEntity(findById(id));
+            User userPerformer;
+            if (createUpdateTaskDto.getPerformerEmail() != null) {
+                userPerformer = userMapper.toEntity(userService.findByEmail(createUpdateTaskDto.getPerformerEmail()));
+                task.setPerformer(userPerformer);
+            }
             taskMapper.update(createUpdateTaskDto, task);
             return taskMapper.toTaskResponseDto(taskRepository.save(task));
         } else {
