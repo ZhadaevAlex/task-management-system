@@ -28,7 +28,7 @@ public class CommentController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    @Validated(Marker.OnPost.class)
+    @Validated(Marker.Created.class)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Add a new comment to the task with the specified ID", description = "This endpoint saves a new comment to the database for the the task with the specified ID and returns the comment object with the assigned ID")
     public CommentDto create(@RequestBody @Valid CreateCommentDto createCommentDto) {

@@ -29,7 +29,6 @@ public class TaskController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    @Validated(Marker.OnPost.class)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Add a new task to the database", description = "This endpoint saves a new task to the database and returns the task object with the assigned ID")
     public TaskDto save(@RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New task") CreateUpdateTaskDto createUpdateTaskDto) {

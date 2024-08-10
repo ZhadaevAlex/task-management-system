@@ -27,11 +27,10 @@ public class UserController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    @Validated(Marker.OnPost.class)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Add a new user to the database", description = "This endpoint saves a new user to the database and returns the user object with the assigned id")
     public UserDto save(
-            @RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New user") CreateUpdateUserDto createUpdateUserDto) {
+            @RequestBody @Validated(Marker.Created.class) @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New user") CreateUpdateUserDto createUpdateUserDto) {
         return userService.save(createUpdateUserDto);
     }
 
@@ -60,7 +59,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Update an existing user", description = "This endpoint updates the details of an existing user in the database")
-    public UserDto update(@RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for update") CreateUpdateUserDto createUpdateUserDto, @PathVariable("id") @Parameter(description = "User ID") UUID id) {
+    public UserDto update(@RequestBody @Validated(Marker.Updated.class) @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for update") CreateUpdateUserDto createUpdateUserDto, @PathVariable("id") @Parameter(description = "User ID") UUID id) {
         return userService.update(createUpdateUserDto, id);
     }
 

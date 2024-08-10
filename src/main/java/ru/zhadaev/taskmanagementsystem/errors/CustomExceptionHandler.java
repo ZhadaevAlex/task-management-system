@@ -10,6 +10,7 @@ import ru.zhadaev.taskmanagementsystem.exception.AccessPermissionException;
 import ru.zhadaev.taskmanagementsystem.exception.AlreadyExistsException;
 import ru.zhadaev.taskmanagementsystem.exception.NotFoundException;
 
+import java.security.SignatureException;
 import java.sql.Timestamp;
 
 @RestControllerAdvice
@@ -53,6 +54,17 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<CustomError> onJwtException(JwtException ex) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        return ResponseEntity
+                .status(status)
+                .body(new CustomError(
+                        new Timestamp(System.currentTimeMillis()),
+                        status.getReasonPhrase(),
+                        ex.getMessage()));
+    }
+
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<CustomError> onSignatureException(SignatureException ex) {
         HttpStatus status = HttpStatus.FORBIDDEN;
         return ResponseEntity
                 .status(status)
