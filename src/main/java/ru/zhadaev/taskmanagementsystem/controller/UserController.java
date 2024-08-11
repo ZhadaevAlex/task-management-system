@@ -69,7 +69,7 @@ public class UserController {
         userService.deleteById(id);
     }
 
-    @DeleteMapping("/{email}")
+    @DeleteMapping("/email/{email}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Delete a user by email", description = "This endpoint deletes a user from the database using their unique email")
     public void deleteByEmail(@PathVariable("email") @Parameter(description = "email") String email) {
