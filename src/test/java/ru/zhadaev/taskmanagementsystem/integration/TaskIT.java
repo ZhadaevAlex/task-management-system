@@ -241,7 +241,7 @@ public class TaskIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void update_shouldReturnValidTaskDto_whenTaskIsExists() throws Exception {
+        void updateByAuthor_shouldReturnValidTaskDto_whenTaskIsExists() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -277,7 +277,7 @@ public class TaskIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void update_shouldReturnError_whenUserIsNotExistsById() throws Exception {
+        void updateByAuthor_shouldReturnError_whenUserIsNotExistsById() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -297,6 +297,69 @@ public class TaskIT {
                             .content(content))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$..message").value(expectedMsg));
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void updateByAuthor_shouldReturnError_whenUserIsNotAuthor() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String message = "Only the author can edit the task";
+            UUID id = UUID.fromString("380f1c97-d71f-4a04-b025-0ba103b4f6b0");
+            String header = "New header";
+            CreateUpdateTaskDto updated = new CreateUpdateTaskDto();
+            updated.setHeader(header);
+
+            TaskDto expected = new TaskDto();
+            expected.setId(id);
+            expected.setHeader(header);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(updated);
+
+            mockMvc.perform(patch("/api/tasks/{id}", id)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$..message").value(message));
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void update_shouldReturnValidTaskDto_whenTaskIsExists() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            UUID id = UUID.fromString("3412cd10-9ec0-41f4-802f-e6440792fed2");
+            String header = "New header";
+            CreateUpdateTaskDto updated = new CreateUpdateTaskDto();
+            updated.setHeader(header);
+
+            TaskDto expected = new TaskDto();
+            expected.setId(id);
+            expected.setHeader(header);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(updated);
+
+            MvcResult result = mockMvc.perform(patch("/api/tasks/{id}", id)
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isAccepted())
+                    .andReturn();
+
+            String responseBody = result.getResponse().getContentAsString();
+            TaskDto actual = objectMapper.readValue(responseBody, TaskDto.class);
+            expected.setAuthor(actual.getAuthor());
+            expected.setDescription(actual.getDescription());
+            expected.setPerformer(actual.getPerformer());
+            expected.setPriority(actual.getPriority());
+            expected.setStatus(actual.getStatus());
+            assertEquals(expected, actual);
         }
     }
 

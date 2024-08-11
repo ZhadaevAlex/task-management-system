@@ -41,7 +41,7 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(AccessPermissionException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<CustomError> onAccessPermissionException(AccessPermissionException ex) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
         return ResponseEntity
