@@ -1,6 +1,5 @@
 package ru.zhadaev.taskmanagementsystem.errors;
 
-import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,7 +9,6 @@ import ru.zhadaev.taskmanagementsystem.exception.AccessPermissionException;
 import ru.zhadaev.taskmanagementsystem.exception.AlreadyExistsException;
 import ru.zhadaev.taskmanagementsystem.exception.NotFoundException;
 
-import java.security.SignatureException;
 import java.sql.Timestamp;
 
 @RestControllerAdvice
@@ -44,28 +42,6 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<CustomError> onAccessPermissionException(AccessPermissionException ex) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        return ResponseEntity
-                .status(status)
-                .body(new CustomError(
-                        new Timestamp(System.currentTimeMillis()),
-                        status.getReasonPhrase(),
-                        ex.getMessage()));
-    }
-
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<CustomError> onJwtException(JwtException ex) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
-        return ResponseEntity
-                .status(status)
-                .body(new CustomError(
-                        new Timestamp(System.currentTimeMillis()),
-                        status.getReasonPhrase(),
-                        ex.getMessage()));
-    }
-
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<CustomError> onSignatureException(SignatureException ex) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
         return ResponseEntity
                 .status(status)
                 .body(new CustomError(
