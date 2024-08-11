@@ -35,8 +35,8 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "performer_id")
     private User performer;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "task_id")
-    private List<Comment> comments;
+//
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "task_id")
+//    private List<Comment> comments;
 }

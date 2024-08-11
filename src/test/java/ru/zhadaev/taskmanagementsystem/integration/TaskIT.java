@@ -103,15 +103,15 @@ public class TaskIT {
         String content3 = "Content3";
         String content4 = "Content4";
         String content5 = "Content5";
-        CommentDto commentDto1 = new CommentDto(UUID.fromString(commentId1), time1, user1, content1);
-        CommentDto commentDto2 = new CommentDto(UUID.fromString(commentId2), time2, user2, content2);
-        CommentDto commentDto3 = new CommentDto(UUID.fromString(commentId3), time3, user3, content3);
-        CommentDto commentDto4 = new CommentDto(UUID.fromString(commentId4), time4, user1, content4);
-        CommentDto commentDto5 = new CommentDto(UUID.fromString(commentId5), time5, user3, content5);
+        CommentDto commentDto1 = new CommentDto(UUID.fromString(commentId1), time1, user1, content1, UUID.fromString(id1));
+        CommentDto commentDto2 = new CommentDto(UUID.fromString(commentId2), time2, user2, content2, UUID.fromString(id1));
+        CommentDto commentDto3 = new CommentDto(UUID.fromString(commentId3), time3, user3, content3, UUID.fromString(id2));
+        CommentDto commentDto4 = new CommentDto(UUID.fromString(commentId4), time4, user1, content4, UUID.fromString(id2));
+        CommentDto commentDto5 = new CommentDto(UUID.fromString(commentId5), time5, user3, content5, null);
 
-        TaskDto task1 = new TaskDto(UUID.fromString(id1), header1, description1, status1, priority1, user1, user2, List.of(commentDto1, commentDto2));
-        TaskDto task2 = new TaskDto(UUID.fromString(id2), header2, description2, status2, priority2, user1, user3, List.of(commentDto3, commentDto4, commentDto5));
-        TaskDto task3 = new TaskDto(UUID.fromString(id3), header3, description3, status3, priority3, user2, user3, new ArrayList<>());
+        TaskDto task1 = new TaskDto(UUID.fromString(id1), header1, description1, status1, priority1, user1, user2); //, List.of(commentDto1, commentDto2
+        TaskDto task2 = new TaskDto(UUID.fromString(id2), header2, description2, status2, priority2, user1, user3); //, List.of(commentDto3, commentDto4, commentDto5)
+        TaskDto task3 = new TaskDto(UUID.fromString(id3), header3, description3, status3, priority3, user2, user3); //, new ArrayList<>()
         List<TaskDto> expected = List.of(task1, task2, task3);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -160,10 +160,10 @@ public class TaskIT {
         Timestamp time2 = Timestamp.valueOf(LocalDateTime.of(2024, 1, 2, 0, 1, 1));
         String content1 = "Content1";
         String content2 = "Content2";
-        CommentDto commentDto1 = new CommentDto(UUID.fromString(commentId1), time1, user1, content1);
-        CommentDto commentDto2 = new CommentDto(UUID.fromString(commentId2), time2, user2, content2);
+        CommentDto commentDto1 = new CommentDto(UUID.fromString(commentId1), time1, user1, content1, UUID.fromString(id1));
+        CommentDto commentDto2 = new CommentDto(UUID.fromString(commentId2), time2, user2, content2, UUID.fromString(id1));
 
-        TaskDto expected = new TaskDto(UUID.fromString(id1), header1, description1, status1, priority1, user1, user2, List.of(commentDto1, commentDto2));
+        TaskDto expected = new TaskDto(UUID.fromString(id1), header1, description1, status1, priority1, user1, user2); //, List.of(commentDto1, commentDto2)
 
         MvcResult result = mockMvc.perform(get("/api/tasks/{id}", id1)
                         .header("Authorization", "Bearer " + jwtToken))
@@ -209,7 +209,7 @@ public class TaskIT {
         UserDto performer = new UserDto(UUID.fromString(performerId1), performerEmail, performerPassword);
 
         CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header1, description1, status1.toString(), priority1.toString(), performerEmail);
-        TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer, null);
+        TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer); //, null
         ObjectMapper objectMapper = new ObjectMapper();
         String content = objectMapper.writeValueAsString(saved);
         MvcResult result = mockMvc.perform(post("/api/tasks")
@@ -245,7 +245,7 @@ public class TaskIT {
         UserDto performer = new UserDto(UUID.fromString(performerId1), performerEmail, performerPassword);
 
         CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header1, description1, status1.toString(), priority1.toString(), performerEmail);
-        TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer, null);
+        TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer);
         ObjectMapper objectMapper = new ObjectMapper();
         String content = objectMapper.writeValueAsString(saved);
 

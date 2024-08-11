@@ -25,7 +25,6 @@ public class Comment {
     @ManyToOne
     private User author;
     private String content;
-
-    @ManyToOne
-    private Task task;
+//    @ManyToOne
+    private UUID taskId;
 }

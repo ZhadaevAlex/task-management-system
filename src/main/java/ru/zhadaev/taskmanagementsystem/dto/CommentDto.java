@@ -17,4 +17,5 @@ public class CommentDto {
     private Timestamp time;
     private UserDto author;
     private String content;
+    private UUID taskId;
 }

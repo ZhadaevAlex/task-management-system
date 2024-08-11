@@ -20,5 +20,5 @@ public class TaskDto {
     private Priority priority;
     private UserDto author;
     private UserDto performer;
-    private List<CommentDto> comments;
+//    private List<CommentDto> comments;
 }

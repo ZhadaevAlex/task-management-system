@@ -23,5 +23,5 @@ public class CreateCommentDto {
     @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
             message = "It must be in the UUID format"
     )
-    private UUID taskId;
+    private String taskId;
 }

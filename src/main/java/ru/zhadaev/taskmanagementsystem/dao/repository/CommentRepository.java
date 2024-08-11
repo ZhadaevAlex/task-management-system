@@ -15,8 +15,5 @@ public interface CommentRepository extends
         CrudRepository<Comment, UUID>,
         PagingAndSortingRepository<Comment, UUID> {
 
-    @Query("from Comment where task.id = :taskId and author.email = :email")
-    List<Comment> findAllByAuthorByTaskId(String email, UUID taskId, Pageable pageable);
-
     List<Comment> findAllByTaskId(UUID taskId, Pageable pageable);
 }

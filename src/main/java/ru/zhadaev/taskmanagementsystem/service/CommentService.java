@@ -37,19 +37,15 @@ public class CommentService {
     public CommentDto addToTask(CreateCommentDto createCommentDto) {
         String authUserEmail = userService.getAuthUserEmail();
         User authUser = userMapper.toEntity(userService.findByEmail(authUserEmail));
-        Task task = taskMapper.toEntity(taskService.findById(createCommentDto.getTaskId()));
+        UUID taskId = UUID.fromString(createCommentDto.getTaskId());
+        Task task = taskMapper.toEntity(taskService.findById(taskId));
         Comment comment = commentMapper.toEntity(createCommentDto);
         comment.setAuthor(authUser);
         comment.setTime(Timestamp.from(Instant.now()));
-        task.getComments().add(comment);
-        comment.setTask(task);
-        return commentMapper.toDto(commentRepository.save(comment));
-    }
-
-    public List<CommentDto> findAllByAuthorByTaskId(UUID taskId, Pageable pageable) {
-        String authUserEmail = userService.getAuthUserEmail();
-        List<Comment> comments = commentRepository.findAllByAuthorByTaskId(authUserEmail, taskId, pageable);
-        return commentMapper.toDtos(comments);
+//        task.getComments().add(comment);
+        Comment saved = commentRepository.save(comment);
+        comment.setTaskId(task.getId());
+        return commentMapper.toDto(saved);
     }
 
     public List<CommentDto> findAllByTaskId(UUID taskId, Pageable pageable) {
