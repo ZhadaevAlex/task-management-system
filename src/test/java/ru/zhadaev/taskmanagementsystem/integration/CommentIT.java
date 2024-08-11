@@ -243,4 +243,51 @@ public class CommentIT {
                     .andExpect(jsonPath("$..message").value(message));
         }
     }
+
+    @Nested
+    @DisplayName("Tests for delete an comment")
+    class DeleteTest {
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void deleteByIdByAuthor_shouldReturnOk_whenCommentIsExistsByIdAndUserIsAuthor() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            UUID id = UUID.fromString("216a035d-3c5f-4c74-a860-6d1cb6d27a88");
+            mockMvc.perform(delete("/api/comments/author/{id}", id))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void deleteByIdByAuthor_shouldReturnNotFoundError_whenCommentNotExistsById() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String badId = "fedd6a4f-f0e8-4a50-82e7-8b69bffc6506";
+            String expectedMsg = "Comment delete error. Comment not found by id = " + badId;
+
+            mockMvc.perform(delete("/api/comments/author/{id}", badId))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$..message").value(expectedMsg));
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void deleteByIdByAuthor_shouldReturnError_whenUserIsNotAuthor() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String expectedMsg = "Only the author can delete the comment";
+            UUID id = UUID.fromString("1272adcc-ed29-4835-9a26-bf9be266ab64");
+
+            mockMvc.perform(delete("/api/comments/author/{id}", id))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$..message").value(expectedMsg));
+        }
+    }
 }
