@@ -7,9 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.zhadaev.taskmanagementsystem.validation.Marker;
-
-import java.util.UUID;
 
 @Schema(description = "Updated comment")
 @Data

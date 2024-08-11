@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -35,8 +34,4 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "performer_id")
     private User performer;
-//
-//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "task_id")
-//    private List<Comment> comments;
 }

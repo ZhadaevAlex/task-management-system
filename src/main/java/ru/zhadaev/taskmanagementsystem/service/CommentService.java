@@ -19,7 +19,6 @@ import ru.zhadaev.taskmanagementsystem.mapper.UserMapper;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +41,6 @@ public class CommentService {
         Comment comment = commentMapper.toEntity(createCommentDto);
         comment.setAuthor(authUser);
         comment.setTime(Timestamp.from(Instant.now()));
-//        task.getComments().add(comment);
         Comment saved = commentRepository.save(comment);
         comment.setTaskId(task.getId());
         return commentMapper.toDto(saved);

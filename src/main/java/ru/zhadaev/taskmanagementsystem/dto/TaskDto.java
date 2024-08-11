@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.zhadaev.taskmanagementsystem.dao.entity.Status;
-import java.util.List;
 import java.util.UUID;
 
 @Schema(description = "Task")

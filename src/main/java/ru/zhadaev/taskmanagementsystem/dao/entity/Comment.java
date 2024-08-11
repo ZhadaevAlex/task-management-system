@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +24,5 @@ public class Comment {
     @ManyToOne
     private User author;
     private String content;
-//    @ManyToOne
     private UUID taskId;
 }
