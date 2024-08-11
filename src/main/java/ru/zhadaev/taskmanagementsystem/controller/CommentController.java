@@ -46,7 +46,7 @@ public class CommentController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Updating the comment by ID if the user is the author", description = "This endpoint updates the details of an existing comment in the database with the specified ID, but only if the requesting user is the author of the comment")
-    public CommentDto updateByIdByAuthor(@RequestBody @Valid UpdateCommentDto updateCommentDto, @PathVariable("id") @Parameter(description = "Comment ID") UUID id) {
+    public CommentDto updateByAuthor(@RequestBody @Valid UpdateCommentDto updateCommentDto, @PathVariable("id") @Parameter(description = "Comment ID") UUID id) {
         return commentService.updateByIdByAuthor(updateCommentDto, id);
     }
 

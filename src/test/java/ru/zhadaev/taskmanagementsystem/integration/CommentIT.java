@@ -156,4 +156,91 @@ public class CommentIT {
             assertEquals(expected, actual);
         }
     }
+
+    @Nested
+    @DisplayName("Tests for update an comments")
+    class UpdateTest {
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void updateByAuthor_shouldReturnValidCommentDto_whenCommentIsExists() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            UUID id = UUID.fromString("216a035d-3c5f-4c74-a860-6d1cb6d27a88");
+            String commentContent = "New content";
+            UpdateCommentDto updated = new UpdateCommentDto();
+            updated.setContent(commentContent);
+
+            CommentDto expected = new CommentDto();
+            expected.setId(id);
+            expected.setContent(commentContent);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(updated);
+
+            MvcResult result = mockMvc.perform(patch("/api/comments/author/{id}", id)
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isAccepted())
+                    .andReturn();
+
+            String responseBody = result.getResponse().getContentAsString();
+            CommentDto actual = objectMapper.readValue(responseBody, CommentDto.class);
+            expected.setAuthor(actual.getAuthor());
+            expected.setTime(actual.getTime());
+            expected.setTaskId(actual.getTaskId());
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void updateByAuthor_shouldReturnError_whenCommentIsNotExistsById() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String badId = "8e2e1511-8105-441f-97e8-5bce88c0267b";
+            String expectedMsg = "Comment update error. Comment not found by id = " + badId;
+
+            String commentContent = "New content";
+           UpdateCommentDto updated = new UpdateCommentDto();
+            updated.setContent(commentContent);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(updated);
+
+            mockMvc.perform(patch("/api/comments/author/{id}", badId)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$..message").value(expectedMsg));
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void updateByAuthor_shouldReturnError_whenUserIsNotAuthor() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String message = "Only the author can edit the comment";
+
+            UUID id = UUID.fromString("1272adcc-ed29-4835-9a26-bf9be266ab64");
+            String commentContent = "New content";
+            UpdateCommentDto updated = new UpdateCommentDto();
+            updated.setContent(commentContent);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(updated);
+
+            mockMvc.perform(patch("/api/comments/author/{id}", id)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$..message").value(message));
+        }
+    }
 }

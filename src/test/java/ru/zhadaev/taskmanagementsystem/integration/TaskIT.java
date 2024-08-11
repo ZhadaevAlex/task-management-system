@@ -274,7 +274,7 @@ public class TaskIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void updateByAuthor_shouldReturnError_whenUserIsNotExistsById() throws Exception {
+        void updateByAuthor_shouldReturnError_whenTaskIsNotExistsById() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -308,10 +308,6 @@ public class TaskIT {
             String header = "New header";
             CreateUpdateTaskDto updated = new CreateUpdateTaskDto();
             updated.setHeader(header);
-
-            TaskDto expected = new TaskDto();
-            expected.setId(id);
-            expected.setHeader(header);
 
             ObjectMapper objectMapper = new ObjectMapper();
             String content = objectMapper.writeValueAsString(updated);
