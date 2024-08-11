@@ -35,17 +35,18 @@ public class CommentController {
         return commentService.addToTask(createCommentDto);
     }
 
-    @GetMapping("/author/{taskId}")
+    @GetMapping("/{taskId}")
+//    @GetMapping("/author/{taskId}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Retrieve all comments of a specific author of the task with the specified ID", description = "This endpoint retrieves a comments from the database of a specific author of the task with the specified ID")
-    public List<CommentDto> findAllByAuthorByTaskId(@PathVariable("taskIs") @Parameter(description = "Task ID") UUID taskId, Pageable pageable) {
+    public List<CommentDto> findAllByAuthorByTaskId(@PathVariable("taskId") @Parameter(description = "Task ID") UUID taskId, Pageable pageable) {
         return commentService.findAllByAuthorByTaskId(taskId, pageable);
     }
 
     @GetMapping("/{taskId}")
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Retrieve all comments of the task with the specified ID", description = "This endpoint returns a list of all comments stored in the database of the task with the specified ID")
-    public List<CommentDto> findAllByTaskId(@PathVariable("taskIs") @Parameter(description = "Task ID") UUID taskId, Pageable pageable) {
+    public List<CommentDto> findAllByTaskId(@PathVariable("taskId") @Parameter(description = "Task ID") UUID taskId, Pageable pageable) {
         return commentService.findAllByTaskId(taskId, pageable);
     }
 
