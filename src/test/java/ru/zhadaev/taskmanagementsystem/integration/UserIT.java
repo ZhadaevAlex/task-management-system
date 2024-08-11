@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import ru.zhadaev.taskmanagementsystem.TaskManagementSystemApplication;
+import ru.zhadaev.taskmanagementsystem.dto.CreateUpdateUserDto;
 import ru.zhadaev.taskmanagementsystem.dto.UserDto;
 import ru.zhadaev.taskmanagementsystem.security.JwtTokenUtils;
 
@@ -55,9 +56,75 @@ public class UserIT {
     private JwtTokenUtils jwtTokenUtils;
 
     private String jwtToken;
-
     @Autowired
+
     private final PasswordEncoder passwordEncoder;
+
+    @Nested
+    @DisplayName("Tests for creation an user")
+    class CreateTest {
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void save_shouldReturnValidUserDto_whenEmailIsValid() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String email = "example7@mail.ru";
+            String password = "Password7#";
+            CreateUpdateUserDto saved = new CreateUpdateUserDto();
+            saved.setEmail(email);
+            saved.setPassword(password);
+
+            UserDto expected = new UserDto();
+            expected.setEmail(email);
+            expected.setPassword(password);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(saved);
+
+            MvcResult result = mockMvc.perform(post("/api/users")
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            String responseBody = result.getResponse().getContentAsString();
+            UserDto actual = objectMapper.readValue(responseBody, UserDto.class);
+            expected.setId(actual.getId());
+            assertTrue(passwordEncoder.matches(saved.getPassword(), actual.getPassword()));
+            expected.setPassword(actual.getPassword());
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void save_shouldReturnError_whenEmailIsNotValid() throws Exception {
+            String expectedMsg = "The email address must be in the format user@example.com";
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String email = "example7";
+            String password = "Password7#";
+            UserDto saved = new UserDto();
+            saved.setEmail(email);
+            saved.setPassword(password);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(saved);
+
+            mockMvc.perform(post("/api/users")
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$..message").value(expectedMsg))
+                    .andReturn();
+        }
+    }
 
     @Nested
     @DisplayName("Test for user's find")
@@ -69,15 +136,15 @@ public class UserIT {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
 
-            String id3 = "5405c989-9dbf-4e35-a923-8b1d4e4ad7bc";
-            String id4 = "fe388668-d648-49f5-9764-5c6c8190806a";
-            String email3 = "example3@mail.ru";
-            String email4 = "example4@mail.ru";
-            String password3 = "$2a$12$S6/o8jkidnqFvwx16KXHVOyAVrXwDiusCGsBECYhFUrTCsJAPsRFu";
-            String password4 = "$2a$12$2LXjXVV3zBwrr5HBlp.KzOPLE77wwM4wtGA6rEdge3I.tsmcfR4XO";
+            String id1 = "5405c989-9dbf-4e35-a923-8b1d4e4ad7bc";
+            String id2 = "fe388668-d648-49f5-9764-5c6c8190806a";
+            String email1= "example3@mail.ru";
+            String email2 = "example4@mail.ru";
+            String password1 = "$2a$12$S6/o8jkidnqFvwx16KXHVOyAVrXwDiusCGsBECYhFUrTCsJAPsRFu";
+            String password2 = "$2a$12$2LXjXVV3zBwrr5HBlp.KzOPLE77wwM4wtGA6rEdge3I.tsmcfR4XO";
             List<UserDto> expected = List.of(
-                    new UserDto(UUID.fromString(id3), email3, password3),
-                    new UserDto(UUID.fromString(id4), email4, password4));
+                    new UserDto(UUID.fromString(id1), email1, password1),
+                    new UserDto(UUID.fromString(id2), email2, password2));
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("page", "1");
@@ -122,7 +189,7 @@ public class UserIT {
 
         @WithUserDetails("example1@mail.ru")
         @Test
-        void findById_shouldReturnNotFoundError_whenUserIsNotExists() throws Exception {
+        void findById_shouldReturnNotFoundError_whenUserIsNotExistsById() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -138,7 +205,7 @@ public class UserIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void findByEmail_shouldReturnValidUserDto_whenUserUserIsExistsById() throws Exception {
+        void findByEmail_shouldReturnValidUserDto_whenUserUserIsExistsByEmail() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -161,7 +228,7 @@ public class UserIT {
 
         @WithUserDetails("example1@mail.ru")
         @Test
-        void findByEmail_shouldReturnNotFoundError_whenUserIsNotExists() throws Exception {
+        void findByEmail_shouldReturnNotFoundError_whenUserIsNotExistsByEmail() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -177,64 +244,64 @@ public class UserIT {
     }
 
     @Nested
-    @DisplayName("Tests for creation an user")
-    class CreateTest {
+    @DisplayName("Tests for update an user")
+    class UpdateTest {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnValidUserDto_whenEmailIsValid() throws Exception {
+        void update_shouldReturnValidUserDto_whenUserIsExists() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
 
-            String email = "example7@mail.ru";
+            UUID id = UUID.fromString("fedd6a4f-f0e8-4a50-82e7-8b69bffc6507");
             String password = "Password7#";
-            UserDto saved = new UserDto();
-            saved.setEmail(email);
-            saved.setPassword(password);
+            CreateUpdateUserDto updated = new CreateUpdateUserDto();
+            updated.setPassword(password);
+
+            UserDto expected = new UserDto();
+            expected.setId(id);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            String content = objectMapper.writeValueAsString(saved);
+            String content = objectMapper.writeValueAsString(updated);
 
-            MvcResult result = mockMvc.perform(post("/api/users")
+            MvcResult result = mockMvc.perform(patch("/api/users/{id}", id)
                             .header("Authorization", "Bearer " + jwtToken)
                             .contentType("application/json")
                             .content(content))
-                    .andExpect(status().isCreated())
+                    .andExpect(status().isAccepted())
                     .andReturn();
 
             String responseBody = result.getResponse().getContentAsString();
             UserDto actual = objectMapper.readValue(responseBody, UserDto.class);
-            saved.setId(actual.getId());
-            assertTrue(passwordEncoder.matches(saved.getPassword(), actual.getPassword()));
-            saved.setPassword(actual.getPassword());
-            assertEquals(saved, actual);
+            assertTrue(passwordEncoder.matches(updated.getPassword(), actual.getPassword()));
+            expected.setPassword(actual.getPassword());
+            expected.setEmail(actual.getEmail());
+            assertEquals(expected, actual);
         }
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnError_whenEmailIsNotValid() throws Exception {
-            String expectedMsg = "The email address must be in the format user@example.com";
-
+        void update_shouldReturnError_whenUserIsNotExistsById() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
 
-            String email = "example7";
+            String badId = "8e2e1511-8105-441f-97e8-5bce88c0267b";
+            String expectedMsg = "User not found by id = " + badId;
+
             String password = "Password7#";
-            UserDto saved = new UserDto();
-            saved.setEmail(email);
-            saved.setPassword(password);
+            CreateUpdateUserDto updated = new CreateUpdateUserDto();
+            updated.setPassword(password);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            String content = objectMapper.writeValueAsString(saved);
+            String content = objectMapper.writeValueAsString(updated);
 
-            mockMvc.perform(post("/api/users")
+            mockMvc.perform(patch("/api/users/{id}", badId)
                             .contentType("application/json")
                             .content(content))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$..message").value(expectedMsg))
-                    .andReturn();
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$..message").value(expectedMsg));
         }
     }
 
