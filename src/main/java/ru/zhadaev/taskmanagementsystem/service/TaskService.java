@@ -77,6 +77,8 @@ public class TaskService {
     public TaskDto assignPerformerById(AssignTaskPerformerDto assignTaskPerformerDto, UUID id) {
         if (isAuthor(id)) {
             Task task = taskMapper.toEntity(findById(id));
+            User userPerformer = userMapper.toEntity(userService.findByEmail(assignTaskPerformerDto.getPerformerEmail()));
+            task.setPerformer(userPerformer);
             taskMapper.update(assignTaskPerformerDto, task);
             return taskMapper.toTaskResponseDto(taskRepository.save(task));
         } else {

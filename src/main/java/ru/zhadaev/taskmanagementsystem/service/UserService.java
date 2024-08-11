@@ -57,7 +57,7 @@ public class UserService {
     }
 
     public UserDto update(CreateUpdateUserDto userDto, UUID id) {
-        User user = userMapper.toEntity(this.findById(id));
+        User user = userMapper.toEntity(findById(id));
         userMapper.update(userDto, user);
         if (userDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -94,17 +94,17 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public UserDetails getCurrentUserDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            return (UserDetails) authentication.getPrincipal();
-        } else {
-            throw new AuthorizationServiceException("User not authenticated");
-        }
-    }
+//    public UserDetails getCurrentUserDetails() {
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+//            return (UserDetails) authentication.getPrincipal();
+//        } else {
+//            throw new AuthorizationServiceException("User not authenticated");
+//        }
+//    }
 
     public String getAuthUserEmail() {
-        UserDetails userDetails = getCurrentUserDetails();
-        return userDetails.getUsername();
+        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

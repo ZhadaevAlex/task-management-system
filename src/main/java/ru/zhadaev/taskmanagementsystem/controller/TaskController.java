@@ -53,7 +53,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Update a task if the user is the author", description = "This endpoint updates the details of an existing task in the database, but only if the requesting user is the author of the task")
-    public TaskDto updateByAuthor(@RequestBody @Validated(Marker.Created.class) @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for update") CreateUpdateTaskDto createUpdateTaskDto, @Parameter(description = "Task ID") @PathVariable("id") UUID id) {
+    public TaskDto updateByAuthor(@RequestBody @Validated(Marker.Updated.class) @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for update") CreateUpdateTaskDto createUpdateTaskDto, @Parameter(description = "Task ID") @PathVariable("id") UUID id) {
         return taskService.updateByAuthor(createUpdateTaskDto, id);
     }
 
