@@ -28,7 +28,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Add a new user to the database", description = "This endpoint saves a new user to the database and returns the user object with the assigned id")
-    public UserDto save(
+    public UserDto create(
             @RequestBody @Validated(Marker.Created.class) @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New user") CreateUpdateUserDto createUpdateUserDto) {
         return userService.save(createUpdateUserDto);
     }

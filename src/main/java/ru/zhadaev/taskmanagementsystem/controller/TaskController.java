@@ -31,7 +31,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "JWT")
     @Operation(summary = "Add a new task to the database", description = "This endpoint saves a new task to the database and returns the task object with the assigned ID")
-    public TaskDto save(@RequestBody @Validated(Marker.Created.class) @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New task") CreateUpdateTaskDto createUpdateTaskDto) {
+    public TaskDto create(@RequestBody @Validated(Marker.Created.class) @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "New task") CreateUpdateTaskDto createUpdateTaskDto) {
         return taskService.save(createUpdateTaskDto);
     }
 

@@ -25,8 +25,6 @@ import ru.zhadaev.taskmanagementsystem.dao.entity.Status;
 import ru.zhadaev.taskmanagementsystem.dto.*;
 import ru.zhadaev.taskmanagementsystem.security.JwtTokenUtils;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,11 +55,11 @@ public class TaskIT {
     private String jwtToken;
 
     @Nested
-    @DisplayName("Tests for creation an user")
+    @DisplayName("Tests for creation an task")
     class CreateTest {
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnValidTaskDto_whenDataIsValid() throws Exception {
+        void create_shouldReturnValidTaskDto_whenDataIsValid() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -95,7 +93,7 @@ public class TaskIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnError_whenSomeDataIsNotValid() throws Exception {
+        void create_shouldReturnError_whenSomeDataIsNotValid() throws Exception {
             String expectedMsg = "The header must contain at least one non-whitespace character";
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -126,7 +124,7 @@ public class TaskIT {
     class FindTest {
         @Test
         @WithUserDetails("example1@mail.ru")
-        void findAllByTaskId_shouldReturnListValidTaskDto() throws Exception {
+        void findAll_shouldReturnListValidTaskDto() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);

@@ -66,7 +66,7 @@ public class UserIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnValidUserDto_whenEmailIsValid() throws Exception {
+        void create_shouldReturnValidUserDto_whenEmailIsValid() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -101,7 +101,7 @@ public class UserIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnError_whenEmailIsNotValid() throws Exception {
+        void create_shouldReturnError_whenEmailIsNotValid() throws Exception {
             String expectedMsg = "The email address must be in the format user@example.com";
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
