@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,6 +56,71 @@ public class TaskIT {
     private JwtTokenUtils jwtTokenUtils;
 
     private String jwtToken;
+
+    @Nested
+    @DisplayName("Tests for creation an user")
+    class CreateTest {
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void save_shouldReturnValidTaskDto_whenDataIsValid() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String header = "header4";
+            String description = "description4";
+            Status status = Status.OPENED;
+            Priority priority = Priority.HIGH;
+            String performerId = "fedd6a4f-f0e8-4a50-82e7-8b69bffc6507";
+            String performerEmail = "example1@mail.ru";
+            String performerPassword = "$2a$12$XCoPKbTUfLzWYda0yCsSHuy9M9gVJATttpyvuInpkXmso9g2SME1W";
+            UserDto performer = new UserDto(UUID.fromString(performerId), performerEmail, performerPassword);
+
+            CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header, description, status.toString(), priority.toString(), performerEmail);
+            TaskDto expected = new TaskDto(null, header, description, status, priority, null, performer);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(saved);
+            MvcResult result = mockMvc.perform(post("/api/tasks")
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isCreated())
+                    .andReturn();
+
+            String responseBody = result.getResponse().getContentAsString();
+            TaskDto actual = objectMapper.readValue(responseBody, TaskDto.class);
+            expected.setId(actual.getId());
+            expected.setAuthor(actual.getAuthor());
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void save_shouldReturnError_whenSomeDataIsNotValid() throws Exception {
+            String expectedMsg = "The header must contain at least one non-whitespace character";
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String header = null;
+            String description = "description4";
+            Status status = Status.OPENED;
+            Priority priority = Priority.HIGH;
+            String performerEmail = "example1@mail.ru";
+
+            CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header, description, status.toString(), priority.toString(), performerEmail);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(saved);
+
+            mockMvc.perform(post("/api/tasks")
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$..message").value(expectedMsg))
+                    .andReturn();
+        }
+    }
 
     @Nested
     @DisplayName("Test for task's find")
@@ -134,24 +200,14 @@ public class TaskIT {
             UserDto user1 = new UserDto(UUID.fromString(userId1), userEmail1, userPassword1);
             UserDto user2 = new UserDto(UUID.fromString(userId2), userEmail2, userPassword2);
 
-            String id1 = "3412cd10-9ec0-41f4-802f-e6440792fed2";
-            String header1 = "header1";
-            String description1 = "description1";
-            Status status1 = Status.OPENED;
-            Priority priority1 = Priority.HIGH;
+            String id = "3412cd10-9ec0-41f4-802f-e6440792fed2";
+            String header = "header1";
+            String description = "description1";
+            Status status = Status.OPENED;
+            Priority priority = Priority.HIGH;
+            TaskDto expected = new TaskDto(UUID.fromString(id), header, description, status, priority, user1, user2);
 
-            String commentId1 = "216a035d-3c5f-4c74-a860-6d1cb6d27a88";
-            String commentId2 = "433c2bf7-41c3-462d-8d71-e01ee1849bcc";
-            Timestamp time1 = Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 0, 1, 1));
-            Timestamp time2 = Timestamp.valueOf(LocalDateTime.of(2024, 1, 2, 0, 1, 1));
-            String content1 = "Content1";
-            String content2 = "Content2";
-            CommentDto commentDto1 = new CommentDto(UUID.fromString(commentId1), time1, user1, content1, UUID.fromString(id1));
-            CommentDto commentDto2 = new CommentDto(UUID.fromString(commentId2), time2, user2, content2, UUID.fromString(id1));
-
-            TaskDto expected = new TaskDto(UUID.fromString(id1), header1, description1, status1, priority1, user1, user2); //, List.of(commentDto1, commentDto2)
-
-            MvcResult result = mockMvc.perform(get("/api/tasks/{id}", id1)
+            MvcResult result = mockMvc.perform(get("/api/tasks/{id}", id)
                             .header("Authorization", "Bearer " + jwtToken))
                     .andExpect(status().isOk())
                     .andReturn();
@@ -180,68 +236,70 @@ public class TaskIT {
     }
 
     @Nested
-    @DisplayName("Tests for creation an user")
-    class CreateTest {
+    @DisplayName("Tests for update an task")
+    class UpdateTest {
+
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnValidTaskDto_whenDataIsValid() throws Exception {
+        void update_shouldReturnValidTaskDto_whenTaskIsExists() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
 
-            String header1 = "header4";
-            String description1 = "description4";
-            Status status1 = Status.OPENED;
-            Priority priority1 = Priority.HIGH;
-            String performerId1 = "fedd6a4f-f0e8-4a50-82e7-8b69bffc6507";
-            String performerEmail = "example1@mail.ru";
-            String performerPassword = "$2a$12$XCoPKbTUfLzWYda0yCsSHuy9M9gVJATttpyvuInpkXmso9g2SME1W";
-            UserDto performer = new UserDto(UUID.fromString(performerId1), performerEmail, performerPassword);
+            UUID id = UUID.fromString("3412cd10-9ec0-41f4-802f-e6440792fed2");
+            String header = "New header";
+            CreateUpdateTaskDto updated = new CreateUpdateTaskDto();
+            updated.setHeader(header);
 
-            CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header1, description1, status1.toString(), priority1.toString(), performerEmail);
-            TaskDto expected = new TaskDto(null, header1, description1, status1, priority1, null, performer); //, null
+            TaskDto expected = new TaskDto();
+            expected.setId(id);
+            expected.setHeader(header);
+
             ObjectMapper objectMapper = new ObjectMapper();
-            String content = objectMapper.writeValueAsString(saved);
-            MvcResult result = mockMvc.perform(post("/api/tasks")
+            String content = objectMapper.writeValueAsString(updated);
+
+            MvcResult result = mockMvc.perform(patch("/api/tasks/{id}", id)
                             .header("Authorization", "Bearer " + jwtToken)
                             .contentType("application/json")
                             .content(content))
-                    .andExpect(status().isCreated())
+                    .andExpect(status().isAccepted())
                     .andReturn();
 
             String responseBody = result.getResponse().getContentAsString();
             TaskDto actual = objectMapper.readValue(responseBody, TaskDto.class);
-            expected.setId(actual.getId());
             expected.setAuthor(actual.getAuthor());
+            expected.setDescription(actual.getDescription());
+            expected.setPerformer(actual.getPerformer());
+            expected.setPriority(actual.getPriority());
+            expected.setStatus(actual.getStatus());
             assertEquals(expected, actual);
         }
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void save_shouldReturnError_whenSomeDataIsNotValid() throws Exception {
-            String expectedMsg = "The header must contain at least one non-whitespace character";
-
+        void update_shouldReturnError_whenUserIsNotExistsById() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
 
-            String header = null;
-            String description = "description4";
-            Status status = Status.OPENED;
-            Priority priority = Priority.HIGH;
-            String performerEmail = "example1@mail.ru";
+            String badId = "8e2e1511-8105-441f-97e8-5bce88c0267b";
+            String expectedMsg = "Task not found by id = " + badId;
 
-            CreateUpdateTaskDto saved = new CreateUpdateTaskDto(header, description, status.toString(), priority.toString(), performerEmail);
+            String header = "New header";
+            CreateUpdateTaskDto updated = new CreateUpdateTaskDto();
+            updated.setHeader(header);
+
             ObjectMapper objectMapper = new ObjectMapper();
-            String content = objectMapper.writeValueAsString(saved);
+            String content = objectMapper.writeValueAsString(updated);
 
-            mockMvc.perform(post("/api/tasks")
+            mockMvc.perform(patch("/api/tasks/{id}", badId)
                             .contentType("application/json")
                             .content(content))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$..message").value(expectedMsg))
-                    .andReturn();
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$..message").value(expectedMsg));
         }
     }
+
+
 
 }
