@@ -79,7 +79,6 @@ public class TaskService {
             Task task = taskMapper.toEntity(findById(id));
             User userPerformer = userMapper.toEntity(userService.findByEmail(assignTaskPerformerDto.getPerformerEmail()));
             task.setPerformer(userPerformer);
-            taskMapper.update(assignTaskPerformerDto, task);
             return taskMapper.toTaskResponseDto(taskRepository.save(task));
         } else {
             throw new AccessPermissionException("only the author can assign performer");
