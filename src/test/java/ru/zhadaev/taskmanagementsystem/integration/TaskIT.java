@@ -29,8 +29,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -328,19 +327,19 @@ public class TaskIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void update_shouldReturnValidTaskDto_whenTaskIsExists() throws Exception {
+        void changeStatusById_shouldReturnValidTaskDto_whenTaskIsExists() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
 
             UUID id = UUID.fromString("3412cd10-9ec0-41f4-802f-e6440792fed2");
-            String header = "New header";
-            CreateUpdateTaskDto updated = new CreateUpdateTaskDto();
-            updated.setHeader(header);
+            String status = "COMPLETED";
+            ChangeStatusTaskDto updated = new ChangeStatusTaskDto();
+            updated.setStatus(status);
 
             TaskDto expected = new TaskDto();
             expected.setId(id);
-            expected.setHeader(header);
+            expected.setStatus(Status.COMPLETED);
 
             ObjectMapper objectMapper = new ObjectMapper();
             String content = objectMapper.writeValueAsString(updated);
@@ -358,11 +357,87 @@ public class TaskIT {
             expected.setDescription(actual.getDescription());
             expected.setPerformer(actual.getPerformer());
             expected.setPriority(actual.getPriority());
+            expected.setHeader(actual.getHeader());
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void assignPerformerById_shouldReturnValidTaskDto_whenTaskIsExists() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            UUID id = UUID.fromString("3412cd10-9ec0-41f4-802f-e6440792fed2");
+            String email = "example2@mail.ru";
+            AssignTaskPerformerDto updated = new AssignTaskPerformerDto();
+            updated.setPerformerEmail(email);
+
+            TaskDto expected = new TaskDto();
+            expected.setId(id);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String content = objectMapper.writeValueAsString(updated);
+
+            MvcResult result = mockMvc.perform(patch("/api/tasks/{id}", id)
+                            .header("Authorization", "Bearer " + jwtToken)
+                            .contentType("application/json")
+                            .content(content))
+                    .andExpect(status().isAccepted())
+                    .andReturn();
+
+            String responseBody = result.getResponse().getContentAsString();
+            TaskDto actual = objectMapper.readValue(responseBody, TaskDto.class);
+            assertEquals(email, actual.getPerformer().getEmail());
+            expected.setAuthor(actual.getAuthor());
+            expected.setDescription(actual.getDescription());
+            expected.setPriority(actual.getPriority());
+            expected.setHeader(actual.getHeader());
             expected.setStatus(actual.getStatus());
+            expected.setPerformer(actual.getPerformer());
             assertEquals(expected, actual);
         }
     }
 
+    @Nested
+    @DisplayName("Tests for delete an task")
+    class DeleteTest {
 
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void deleteById_shouldReturnOk_whenTaskIsExistsById() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
 
+            UUID id = UUID.fromString("3412cd10-9ec0-41f4-802f-e6440792fed2");
+            mockMvc.perform(delete("/api/tasks/{id}", id))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void deleteById_shouldReturnNotFoundError_whenTaskNotExistsById() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            String badId = "fedd6a4f-f0e8-4a50-82e7-8b69bffc6506";
+            String expectedMsg = "Task delete error. Task not found by id = " + badId;
+            mockMvc.perform(delete("/api/tasks/{id}", badId))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$..message").value(expectedMsg));
+        }
+
+        @Test
+        @WithUserDetails("example1@mail.ru")
+        void deleteAll_shouldReturnOk() throws Exception {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            jwtToken = jwtTokenUtils.generateToken(userDetails);
+
+            mockMvc.perform(delete("/api/tasks"))
+                    .andExpect(status().isOk());
+        }
+    }
 }

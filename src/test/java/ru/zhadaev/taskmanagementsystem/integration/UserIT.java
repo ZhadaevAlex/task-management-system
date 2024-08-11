@@ -323,7 +323,7 @@ public class UserIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void deleteById_shouldReturnNotFoundError_whenEntityNotExistsById() throws Exception {
+        void deleteById_shouldReturnNotFoundError_whenUserNotExistsById() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
@@ -349,7 +349,7 @@ public class UserIT {
 
         @Test
         @WithUserDetails("example1@mail.ru")
-        void deleteByEmail_shouldReturnNotFoundError_whenEntityNotExistsByEmail() throws Exception {
+        void deleteByEmail_shouldReturnNotFoundError_whenUserNotExistsByEmail() throws Exception {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             jwtToken = jwtTokenUtils.generateToken(userDetails);
